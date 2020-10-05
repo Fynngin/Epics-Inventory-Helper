@@ -16,9 +16,12 @@
     ],
     "background": {
         "scripts": ["background.js"],
-        "persistent": true
+        "persistent": false
     },
     "permissions": [
-        "tabs", "webRequest", "*://app.epics.gg/*"
-    ]
+        "tabs"
+    ],
+    "web_accessible_resources": [
+        "coin.svg"
+     ]
 }
