@@ -1,0 +1,24 @@
+{
+    "manifest_version": 2,
+    "version": "0.1",
+
+    "name": "Epics Inventory Helper",
+    "description": "Simple extension that displays market prices for items when trading",
+    "browser_action": {
+        "default_icon": "icon.png"
+    },
+    "content_scripts": [
+        {
+            "matches": ["*://app.epics.gg/*"],
+            "run_at": "document_end",
+            "js": ["content.js"]
+        }
+    ],
+    "background": {
+        "scripts": ["background.js"],
+        "persistent": true
+    },
+    "permissions": [
+        "tabs", "webRequest", "*://app.epics.gg/*"
+    ]
+}
