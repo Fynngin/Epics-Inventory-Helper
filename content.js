@@ -48,6 +48,9 @@ function getMarketValues(cards, categoryId, jwt) {
         let div = document.createElement("DIV")
         div.style.marginTop = "10px"
         div.style.height = "16px"
+        div.style.display = "flex"
+        div.style.flexDirection = "row"
+        div.style.justifyContent = "center"
         card.item.appendChild(div)
 
         let spinner = document.createElement("DIV")
