@@ -22,6 +22,6 @@
         "tabs"
     ],
     "web_accessible_resources": [
-        "coin.svg"
+        "images/coin.png", "spinner.html"
      ]
 }

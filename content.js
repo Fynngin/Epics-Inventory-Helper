@@ -44,6 +44,20 @@ function getCardTemplates(categoryId, collectionId, jwt) {
 
 function getMarketValues(cards, categoryId, jwt) {
     for (let card of cards) {
+        card.item.style.display = "block"
+        let div = document.createElement("DIV")
+        div.style.marginTop = "10px"
+        div.style.height = "16px"
+        card.item.appendChild(div)
+
+        let spinner = document.createElement("DIV")
+        fetch(chrome.runtime.getURL("spinner.html"))
+            .then(res => res.text())
+            .then(data => {
+                spinner.innerHTML = data
+                div.appendChild(spinner)
+            })
+
         let url = `https://api.epics.gg/api/v1/market/buy?categoryId=${categoryId}&page=1&sort=price&templateId=${card.templateId}&type=card`
         fetch(url, {
             method: 'GET',
@@ -52,17 +66,32 @@ function getMarketValues(cards, categoryId, jwt) {
               'X-User-JWT': jwt
             },
         }).then(res => res.json()).then(data => {
-            card.item.style.display = "block"
             let price = null
             if (data.data.count > 0) {
                 price = data.data.market[0][0].price
             } else {
                 price = "-"
             }
+
+            div.removeChild(spinner)
+
+            let coin = document.createElement("IMG")
+            coin.src = chrome.runtime.getURL("images/coin.png")
+            coin.style.width = "16px"
+            coin.style.height = "16px"
+            coin.style.marginRight = "5px"
+            div.appendChild(coin)
+
             let h2 = document.createElement("H2")
-            h2.style.marginTop = "10px"
             h2.innerHTML = price
-            card.item.appendChild(h2)
+            h2.style.display = "inline"
+            h2.style.marginTop = "0"
+            h2.style.height = "16px"
+            div.appendChild(h2)
         })
     }
+}
+
+function switchSpinner() {
+
 }
