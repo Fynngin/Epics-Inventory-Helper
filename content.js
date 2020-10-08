@@ -43,14 +43,12 @@ chrome.runtime.onMessage.addListener(
 function getCardTemplates(evt, categoryId, collectionId) {
     let el = evt.target;
 
-    if (el.checked) {   //ignore weird double click for now
+    if (el.checked !== null) {   //ignore weird double click for now
         if (el.checked) {
-            console.log(el.checked)
             let listItems = Array.from(document.querySelectorAll('li img[src^="https://cdn.epics.gg/card"]'))
                 .map(it => it.closest('li'))
             sortItems(listItems, categoryId, collectionId)
         } else {
-            console.log('dumb')
             let prices = document.getElementsByClassName('cardPrice')
             for (item of prices) {
                 item.remove()
