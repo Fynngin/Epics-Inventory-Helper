@@ -23,7 +23,7 @@
         "persistent": true
     },
     "permissions": [
-        "tabs", "webRequest", "*://app.epics.gg/"
+        "tabs"
     ],
     "web_accessible_resources": [
         "images/coin.png", "spinner.html"

@@ -1,5 +1,7 @@
 let jwt = window.localStorage.getItem("new:jwt:token")
 let coinSrc = chrome.runtime.getURL("images/coin.png")
+let collectionId;
+let categoryId;
 
 let btn = `<label id="marketPriceBtn" class="marketPriceBtn" for="marketPrices">
     <span class="showPriceText">Show prices</span>
@@ -11,10 +13,26 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.message === 'trade') {
         let toolbar = document.querySelector('div label').parentElement
+        let collCategories = document.querySelectorAll('section')[0]
+        let collList = document.querySelectorAll('section')[1]
+        collectionId = request.collectionId
+        categoryId = request.categoryId
+
+        //start loading prices when button is clicked
         if (!document.getElementById('marketPriceBtn')) {
             toolbar.insertAdjacentHTML('beforeEnd', btn);
-            document.getElementById('marketPriceBtn').addEventListener('click', function(evt) {getCardTemplates(evt, request.categoryId, request.collectionId)});
+            document.getElementById('marketPriceBtn').addEventListener('click', function(evt) {
+                getCardTemplates(evt, categoryId, collectionId)
+            });
         }
+
+        //reset button at collection change
+        collList.addEventListener('click', function(evt) {
+            if (["DIV", "P", "IMG", "LI"].includes(evt.path[0].tagName)) {
+                document.getElementById('marketPrices').checked = false
+            }
+        })
+
     } else if (request.message === 'clickCollection') {
         let collList = document.querySelectorAll('section')[1]
         let observer = new MutationObserver((mutations) => {
@@ -129,6 +147,7 @@ function getMarketValues(cards, categoryId, jwt) {
             let coin = document.createElement("IMG")
             coin.src = coinSrc
             coin.classList.add('cardPrice')
+            coin.style.width = "16px"
             div.appendChild(coin)
 
             let h2 = document.createElement("H2")

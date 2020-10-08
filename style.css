@@ -62,7 +62,7 @@ span.marketPriceBtn::before {
 }
 
 div.cardPrice {
-    margin-top: 10px;
+    margin-top: 10px !important;
     height: 16px;
     display: flex;
     flex-direction: row;
@@ -77,6 +77,6 @@ img.cardPrice {
 
 h2.cardPrice {
     display: inline;
-    margin-top: 0;
     height: 16px;
+    width: auto;
 }
