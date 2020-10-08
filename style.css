@@ -1,0 +1,82 @@
+.showPriceText {
+    color: #ad8dbf;
+    text-transform: uppercase;
+    font-size: 15px;
+    font-weight: 800;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    line-height: 2;
+    cursor: pointer;
+}
+
+label.marketPriceBtn {
+    display: flex;
+    padding-right: 20px;
+    align-items: center;
+}
+
+input.marketPriceBtn {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+}
+
+span.marketPriceBtn {
+    --toggle-height: 1.25rem;
+    --toggle-thumb-padding: 2px;
+    display: inline-block;
+    position: relative;
+    width: calc(2 * var(--toggle-height));
+    height: calc(var(--toggle-height) + (2 * var(--toggle-thumb-padding)));
+    border-radius: var(--toggle-height);
+    transition: 0.2s;
+    cursor: pointer;
+    margin-left: 0.5em;
+}
+
+input[type='checkbox'].marketPriceBtn:not(:checked)+span.marketPriceBtn {
+    background: #aa0b53;
+}
+
+input[type='checkbox'].marketPriceBtn:checked+span.marketPriceBtn {
+    background: #0baaaa;
+}
+
+input[type='checkbox'].marketPriceBtn:checked+span.marketPriceBtn::before {
+    transform: translateX(calc(100% - (var(--toggle-thumb-padding) * 2)));
+}
+
+span.marketPriceBtn::before {
+    content: '';
+    position: absolute;
+    background: white;
+    top: var(--toggle-thumb-padding);
+    bottom: var(--toggle-thumb-padding);
+    left: var(--toggle-thumb-padding);
+    height: var(--toggle-height);
+    width: var(--toggle-height);
+    border-radius: 50%;
+    transition: 200ms ease-in-out;
+}
+
+div.cardPrice {
+    margin-top: 10px;
+    height: 16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+img.cardPrice {
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+}
+
+h2.cardPrice {
+    display: inline;
+    margin-top: 0;
+    height: 16px;
+}

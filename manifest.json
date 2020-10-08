@@ -14,15 +14,16 @@
         {
             "matches": ["*://app.epics.gg/*"],
             "run_at": "document_end",
-            "js": ["content.js"]
+            "js": ["content.js"],
+            "css": ["style.css"]
         }
     ],
     "background": {
         "scripts": ["background.js"],
-        "persistent": false
+        "persistent": true
     },
     "permissions": [
-        "tabs"
+        "tabs", "webRequest", "*://app.epics.gg/"
     ],
     "web_accessible_resources": [
         "images/coin.png", "spinner.html"

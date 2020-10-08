@@ -1,14 +1,68 @@
 let jwt = window.localStorage.getItem("new:jwt:token")
+let coinSrc = chrome.runtime.getURL("images/coin.png")
+
+let btn = `<label id="marketPriceBtn" class="marketPriceBtn" for="marketPrices">
+    <span class="showPriceText">Show prices</span>
+    <input class="marketPriceBtn" id="marketPrices" type="checkbox">
+    <span class="marketPriceBtn" tabindex="0" role="switch" aria-checked="false"></span>
+</label>`
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.message === 'trade') {
-        getCardTemplates(request.categoryId, request.collectionId, jwt)
+        let toolbar = document.querySelector('div label').parentElement
+        if (!document.getElementById('marketPriceBtn')) {
+            toolbar.insertAdjacentHTML('beforeEnd', btn);
+            document.getElementById('marketPriceBtn').addEventListener('click', function(evt) {getCardTemplates(evt, request.categoryId, request.collectionId)});
+        }
+    } else if (request.message === 'clickCollection') {
+        let collList = document.querySelectorAll('section')[1]
+        let observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (!mutation.addedNodes) return
+
+                for (let i = 0; i < mutation.addedNodes.length; i++) {
+                    let node = mutation.addedNodes[i]
+                    if (node.querySelector('li img[src^="https://cdn.epics.gg/collection"]')) {
+                        observer.disconnect()
+                        node.childNodes[1].click()
+                    }
+                }
+            })
+        })
+
+        observer.observe(collList, {
+            childList: true
+            , subtree: true
+            , attributes: false
+            , characterData: false
+        })
     }
 });
 
-function getCardTemplates(categoryId, collectionId, jwt) {
+function getCardTemplates(evt, categoryId, collectionId) {
+    let el = evt.target;
+
+    if (el.checked) {   //ignore weird double click for now
+        if (el.checked) {
+            console.log(el.checked)
+            let listItems = Array.from(document.querySelectorAll('li img[src^="https://cdn.epics.gg/card"]'))
+                .map(it => it.closest('li'))
+            sortItems(listItems, categoryId, collectionId)
+        } else {
+            console.log('dumb')
+            let prices = document.getElementsByClassName('cardPrice')
+            for (item of prices) {
+                item.remove()
+            }
+        }
+    }
+}
+
+function sortItems(listItems, categoryId, collectionId) {
+    let cardTemplates;
     let url = `https://api.epics.gg/api/v1/collections/${collectionId}/card-templates?categoryId=${categoryId}`
+
     fetch(url, {
         method: 'GET',
         headers: {
@@ -16,7 +70,7 @@ function getCardTemplates(categoryId, collectionId, jwt) {
           'X-User-JWT': jwt
         },
     }).then(res => res.json()).then(data => {
-        let listItems = Array.from(document.querySelectorAll('li')).filter(el => el.querySelector('img') && !el.querySelector('p'))
+        cardTemplates = data.data
         let res = []
         for (let item of listItems) {
             let src = item.querySelector('img').src
@@ -28,7 +82,7 @@ function getCardTemplates(categoryId, collectionId, jwt) {
                     templateId: templateId
                 })
             } else {
-                let template = data.data.find(elem => {
+                let template = cardTemplates.find(elem => {
                     return elem.images.size402 === src
                 })
                 let templateId = template.id
@@ -46,11 +100,7 @@ function getMarketValues(cards, categoryId, jwt) {
     for (let card of cards) {
         card.item.style.display = "block"
         let div = document.createElement("DIV")
-        div.style.marginTop = "10px"
-        div.style.height = "16px"
-        div.style.display = "flex"
-        div.style.flexDirection = "row"
-        div.style.justifyContent = "center"
+        div.classList.add('cardPrice')
         card.item.appendChild(div)
 
         let spinner = document.createElement("DIV")
@@ -79,22 +129,14 @@ function getMarketValues(cards, categoryId, jwt) {
             div.removeChild(spinner)
 
             let coin = document.createElement("IMG")
-            coin.src = chrome.runtime.getURL("images/coin.png")
-            coin.style.width = "16px"
-            coin.style.height = "16px"
-            coin.style.marginRight = "5px"
+            coin.src = coinSrc
+            coin.classList.add('cardPrice')
             div.appendChild(coin)
 
             let h2 = document.createElement("H2")
             h2.innerHTML = price
-            h2.style.display = "inline"
-            h2.style.marginTop = "0"
-            h2.style.height = "16px"
+            h2.classList.add('cardPrice')
             div.appendChild(h2)
         })
     }
-}
-
-function switchSpinner() {
-
 }
