@@ -14,7 +14,8 @@ let btn = `<label id="marketPriceBtn" class="marketPriceBtn" for="marketPrices">
  * 1. User selects a collection
  * 2. User selects a set
  *
- * 1)
+ * 1) Inject market price switch, if not already on the site
+ * 2) Look for a collection in that set and click it, so that the url then contains a collectionId again
  */
 chrome.runtime.onMessage.addListener(
     function(request) {
