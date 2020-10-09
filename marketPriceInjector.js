@@ -2,6 +2,7 @@ let jwt = window.localStorage.getItem("new:jwt:token")
 let coinSrc = chrome.runtime.getURL("images/coin.png")
 let collectionId;
 let categoryId;
+let season;
 
 let btn = `<label id="marketPriceBtn" class="marketPriceBtn" for="marketPrices">
     <span class="showPriceText">Show prices</span>
@@ -25,6 +26,7 @@ chrome.runtime.onMessage.addListener(
                 let toolbar = document.querySelector('div label').parentElement
                 collectionId = request.collectionId
                 categoryId = request.categoryId
+                season = request.season
 
                 //start loading prices when button is clicked
                 if (!document.getElementById('marketPriceBtn')) {
@@ -123,7 +125,8 @@ function sortItems(listItems, categoryId, collectionId) {
                 })
             } else {
                 let template = cardTemplates.find(elem => {
-                    return elem.images['size402'].split('?')[0] === src     //remove timestamp from file
+                    //remove timestamp from file when prior to season 2020
+                    return season === "2020" ? elem.images['size402'] === src : elem.images['size402'].split('?')[0] === src
                 })
                 let templateId = template.id
                 res.push({

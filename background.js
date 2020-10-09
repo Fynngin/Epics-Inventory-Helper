@@ -4,8 +4,9 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         let collectionId = changeInfo.url.match("collection=[0-9]+")
 
         if (collectionId) {
+            let season = changeInfo.url.match("season=([0-9]+|Founders|First)")[1]
             collectionId = collectionId[0].match(/(\d+)/)[0]
-            sendMsgWithCollId(tabId, collectionId, categoryId)
+            sendMsgWithCollId(tabId, collectionId, categoryId, season)
         } else {
             sendClickMsg(tabId)
         }
@@ -16,12 +17,13 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     }
 });
 
-function sendMsgWithCollId(tabId, collectionId, categoryId) {
+function sendMsgWithCollId(tabId, collectionId, categoryId, season) {
     chrome.tabs.query({active: true, currentWindow: true}, function(){
         chrome.tabs.sendMessage(tabId, {
             message: 'trade',
             collectionId: collectionId,
-            categoryId: categoryId
+            categoryId: categoryId,
+            season: season
         })
     });
 }
