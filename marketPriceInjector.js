@@ -9,55 +9,72 @@ let btn = `<label id="marketPriceBtn" class="marketPriceBtn" for="marketPrices">
     <span class="marketPriceBtn" tabindex="0" role="switch" aria-checked="false"></span>
 </label>`
 
+/**
+ * Listener for 2 actions caught by the background script:
+ * 1. User selects a collection
+ * 2. User selects a set
+ *
+ * 1)
+ */
 chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    if (request.message === 'trade') {
-        let toolbar = document.querySelector('div label').parentElement
-        let collCategories = document.querySelectorAll('section')[0]
+    function(request) {
         let collList = document.querySelectorAll('section')[1]
-        collectionId = request.collectionId
-        categoryId = request.categoryId
+        switch (request.message) {
+            case 'trade':
+                let toolbar = document.querySelector('div label').parentElement
+                collectionId = request.collectionId
+                categoryId = request.categoryId
 
-        //start loading prices when button is clicked
-        if (!document.getElementById('marketPriceBtn')) {
-            toolbar.insertAdjacentHTML('beforeEnd', btn);
-            document.getElementById('marketPriceBtn').addEventListener('click', function(evt) {
-                getCardTemplates(evt, categoryId, collectionId)
-            });
-        }
-
-        //reset button at collection change
-        collList.addEventListener('click', function(evt) {
-            if (["DIV", "P", "IMG", "LI"].includes(evt.path[0].tagName)) {
-                document.getElementById('marketPrices').checked = false
-            }
-        })
-
-    } else if (request.message === 'clickCollection') {
-        let collList = document.querySelectorAll('section')[1]
-        let observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (!mutation.addedNodes) return
-
-                for (let i = 0; i < mutation.addedNodes.length; i++) {
-                    let node = mutation.addedNodes[i]
-                    if (node.querySelector('li img[src^="https://cdn.epics.gg/collection"]')) {
-                        observer.disconnect()
-                        node.childNodes[1].click()
-                    }
+                //start loading prices when button is clicked
+                if (!document.getElementById('marketPriceBtn')) {
+                    toolbar.insertAdjacentHTML('beforeend', btn);
+                    document.getElementById('marketPriceBtn').addEventListener('click', function(evt) {
+                        getCardTemplates(evt, categoryId, collectionId)
+                    });
                 }
-            })
-        })
 
-        observer.observe(collList, {
-            childList: true
-            , subtree: true
-            , attributes: false
-            , characterData: false
-        })
-    }
+                //reset button at collection change
+                collList.addEventListener('click', function(evt) {
+                    if (["DIV", "P", "IMG", "LI"].includes(evt.path[0].tagName)) {
+                        document.getElementById('marketPrices').checked = false
+                    }
+                })
+                break;
+            case 'clickCollection':
+                let observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (!mutation.addedNodes) return
+
+                        for (let i = 0; i < mutation.addedNodes.length; i++) {
+                            let node = mutation.addedNodes[i]
+                            if (node.querySelector('li img[src^="https://cdn.epics.gg/collection"]')) {
+                                observer.disconnect()
+                                node.childNodes[1].click()
+                            }
+                        }
+                    })
+                })
+
+                observer.observe(collList, {
+                    childList: true
+                    , subtree: true
+                    , attributes: false
+                    , characterData: false
+                })
+                break;
+            default:
+                return
+        }
 });
 
+/**
+ * Called, when the "show prices" btn is clicked.
+ * If btn is checked, looks for all the list items, which contain card images.
+ * If btn is unchecked, removes all previously added card price divs.
+ * @param evt, click event needed to filter double click issue
+ * @param categoryId, streamers or csgo category, passed to other function
+ * @param collectionId, passed to other function
+ */
 function getCardTemplates(evt, categoryId, collectionId) {
     let el = evt.target;
 
@@ -67,14 +84,20 @@ function getCardTemplates(evt, categoryId, collectionId) {
                 .map(it => it.closest('li'))
             sortItems(listItems, categoryId, collectionId)
         } else {
-            let prices = document.getElementsByClassName('cardPrice')
-            for (item of prices) {
+            let prices = document.querySelectorAll('div.cardPrice')
+            for (let item of prices) {
                 item.remove()
             }
         }
     }
 }
 
+/**
+ * Gets all cardTemplates for the selected collection from the api, then maps those to the listItems on the site.
+ * @param listItems, cards, shown on the site
+ * @param categoryId, streamers or csgo
+ * @param collectionId, selected collection
+ */
 function sortItems(listItems, categoryId, collectionId) {
     let cardTemplates;
     let url = `https://api.epics.gg/api/v1/collections/${collectionId}/card-templates?categoryId=${categoryId}`
@@ -99,7 +122,7 @@ function sortItems(listItems, categoryId, collectionId) {
                 })
             } else {
                 let template = cardTemplates.find(elem => {
-                    return elem.images.size402 === src
+                    return elem.images['size402'].split('?')[0] === src     //remove timestamp from file
                 })
                 let templateId = template.id
                 res.push({
@@ -112,6 +135,12 @@ function sortItems(listItems, categoryId, collectionId) {
     })
 }
 
+/**
+ * Gets the market value for each card, then injects it below
+ * @param cards, cards shown on the site
+ * @param categoryId, streamers or csgo
+ * @param jwt, user token from local storage
+ */
 function getMarketValues(cards, categoryId, jwt) {
     for (let card of cards) {
         card.item.style.display = "block"
@@ -135,9 +164,9 @@ function getMarketValues(cards, categoryId, jwt) {
               'X-User-JWT': jwt
             },
         }).then(res => res.json()).then(data => {
-            let price = null
+            let price;
             if (data.data.count > 0) {
-                price = data.data.market[0][0].price
+                price = data.data['market'][0][0]['price']
             } else {
                 price = "-"
             }

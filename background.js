@@ -9,11 +9,15 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         } else {
             sendClickMsg(tabId)
         }
+    } else if (changeInfo.url && changeInfo.url.match("http(s)?://app.epics.gg/(csgo|streamers)/trading/view/[0-9]+")) {
+        let categoryId = changeInfo.url.match("(csgo|streamers)")[0] === 'csgo' ? 1 : 2
+        let tradeId = changeInfo.url.match("[0-9]+")
+        sendTradeViewMsg(tabId, tradeId, categoryId)
     }
 });
 
 function sendMsgWithCollId(tabId, collectionId, categoryId) {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    chrome.tabs.query({active: true, currentWindow: true}, function(){
         chrome.tabs.sendMessage(tabId, {
             message: 'trade',
             collectionId: collectionId,
@@ -23,9 +27,19 @@ function sendMsgWithCollId(tabId, collectionId, categoryId) {
 }
 
 function sendClickMsg(tabId) {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    chrome.tabs.query({active: true, currentWindow: true}, function(){
         chrome.tabs.sendMessage(tabId, {
             message: 'clickCollection'
+        })
+    });
+}
+
+function sendTradeViewMsg(tabId, tradeId, categoryId) {
+    chrome.tabs.query({active: true, currentWindow: true}, function(){
+        chrome.tabs.sendMessage(tabId, {
+            message: 'tradeView',
+            tradeId: tradeId,
+            categoryId: categoryId
         })
     });
 }
