@@ -154,7 +154,7 @@ async function sortItems(listItems, categoryId, collectionId) {
             })
             let templateId = template.id
             res.push({
-                type: 'sticker',
+                type: 'card',
                 item: item,
                 templateId: templateId
             })
