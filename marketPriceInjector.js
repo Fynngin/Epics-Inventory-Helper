@@ -83,8 +83,9 @@ function getCardTemplates(evt, categoryId, collectionId) {
 
     if (el.checked !== null) {   //ignore weird double click for now
         if (el.checked) {
-            let listItems = Array.from(document.querySelectorAll('li img[src^="https://cdn.epics.gg/card"]'))
-                .map(it => it.closest('li'))
+            let cards = Array.from(document.querySelectorAll('li img[src^="https://cdn.epics.gg/card"]'))
+            let stickers = Array.from(document.querySelectorAll('li img[src^="https://cdn.epics.gg/sticker"]'))
+            let listItems = cards.concat(stickers).map(it => it.closest('li'))
             sortItems(listItems, categoryId, collectionId)
         } else {
             let prices = document.querySelectorAll('div.cardPrice')
@@ -101,11 +102,23 @@ function getCardTemplates(evt, categoryId, collectionId) {
  * @param categoryId, streamers or csgo
  * @param collectionId, selected collection
  */
-function sortItems(listItems, categoryId, collectionId) {
+async function sortItems(listItems, categoryId, collectionId) {
     let cardTemplates;
-    let url = `https://api.epics.gg/api/v1/collections/${collectionId}/card-templates?categoryId=${categoryId}`
+    let stickerTemplates;
+    let cardUrl = `https://api.epics.gg/api/v1/collections/${collectionId}/card-templates?categoryId=${categoryId}`
+    let stickerUrl = `https://api.epics.gg/api/v1/collections/${collectionId}/sticker-templates?categoryId=${categoryId}`
 
-    fetch(url, {
+    await fetch(stickerUrl, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-JWT': jwt
+        },
+    }).then(res => res.json()).then(data => {
+        stickerTemplates = data.data
+    })
+
+    await fetch(cardUrl, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -113,30 +126,41 @@ function sortItems(listItems, categoryId, collectionId) {
         },
     }).then(res => res.json()).then(data => {
         cardTemplates = data.data
-        let res = []
-        for (let item of listItems) {
-            let src = item.querySelector('img').src
-            if (src.match("card/render/")) {
-                //User has only 1 of that card, so the img link contains the templateId
-                let templateId = parseInt(src.match(/(\d+)/g)[1])
-                res.push({
-                    item: item,
-                    templateId: templateId
-                })
-            } else {
-                let template = cardTemplates.find(elem => {
-                    //remove timestamp from file when prior to season 2020
-                    return season === "2020" ? elem.images['size402'] === src : elem.images['size402'].split('?')[0] === src
-                })
-                let templateId = template.id
-                res.push({
-                    item: item,
-                    templateId: templateId
-                })
-            }
-        }
-        getMarketValues(res, categoryId, jwt)
     })
+
+    let res = []
+    for (let item of listItems) {
+        let src = item.querySelector('img').src
+        if (src.match('sticker')) {
+            let template = stickerTemplates.find(elem => src.match(elem.images[0]))
+            let templateId = template.id
+            res.push({
+                type: 'sticker',
+                item: item,
+                templateId: templateId
+            })
+        } else if (src.match("card/render/")) {
+            //User has only 1 of that card, so the img link contains the templateId
+            let templateId = parseInt(src.match(/(\d+)/g)[1])
+            res.push({
+                type: 'card',
+                item: item,
+                templateId: templateId
+            })
+        } else {
+            let template = cardTemplates.find(elem => {
+                //remove timestamp from file when prior to season 2020
+                return season === "2020" ? elem.images['size402'] === src : elem.images['size402'].split('?')[0] === src
+            })
+            let templateId = template.id
+            res.push({
+                type: 'sticker',
+                item: item,
+                templateId: templateId
+            })
+        }
+    }
+    getMarketValues(res, categoryId, jwt)
 }
 
 /**
@@ -160,7 +184,7 @@ function getMarketValues(cards, categoryId, jwt) {
                 div.appendChild(spinner)
             })
 
-        let url = `https://api.epics.gg/api/v1/market/buy?categoryId=${categoryId}&page=1&sort=price&templateId=${card.templateId}&type=card`
+        let url = `https://api.epics.gg/api/v1/market/buy?categoryId=${categoryId}&page=1&sort=price&templateId=${card.templateId}&type=${card.type}`
         fetch(url, {
             method: 'GET',
             headers: {

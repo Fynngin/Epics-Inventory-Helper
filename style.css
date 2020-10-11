@@ -63,6 +63,7 @@ span.marketPriceBtn::before {
 
 div.cardPrice {
     margin-top: 10px !important;
+    margin-bottom: 10px !important;
     height: 16px;
     display: flex;
     flex-direction: row;
