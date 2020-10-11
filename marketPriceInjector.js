@@ -1,4 +1,4 @@
-let jwt = window.localStorage.getItem("new:jwt:token")
+let jwt = JSON.parse(JSON.parse(window.localStorage.getItem("persist:root"))['auth'])['jwt']
 let coinSrc = chrome.runtime.getURL("images/coin.png")
 let collectionId;
 let categoryId;
