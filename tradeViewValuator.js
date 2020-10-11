@@ -4,8 +4,8 @@ chrome.runtime.onMessage.addListener(
             window.setTimeout(async function() {
                 let leftSide = document.querySelector('nav').nextSibling.firstChild.lastChild.firstChild
                 let rightSide = document.querySelector('nav').nextSibling.firstChild.lastChild.childNodes[1]
-                let leftCards = Array.from(leftSide.querySelectorAll('img')).map(el => el.parentElement.parentElement.parentElement.parentElement)
-                let rightCards = Array.from(rightSide.querySelectorAll('img')).map(el => el.parentElement.parentElement.parentElement.parentElement)
+                let leftCards = getDomElements(leftSide)
+                let rightCards = getDomElements(rightSide)
 
                 let leftHeader = leftSide.parentElement.previousSibling.childNodes[0].querySelector('p')
                 let rightHeader = leftSide.parentElement.previousSibling.childNodes[1].querySelector('p')
@@ -41,6 +41,19 @@ chrome.runtime.onMessage.addListener(
         }
 });
 
+/**
+ * Searches for DIVs which can be used to later append the market price to.
+ * @param container, element containing the items (left or right side of the trade)
+ * @returns array containing the correct elements
+ */
+function getDomElements(container) {
+    return Array.from(container.querySelectorAll('img')).map(el => {
+        if (el.src.match('card'))
+            return el.parentElement.parentElement.parentElement.parentElement
+        else
+            return el.parentElement.parentElement
+    })
+}
 
 /**
  * Get api data for a specific trade.
@@ -74,46 +87,60 @@ function sortCards(leftCards, rightCards, tradeInfo, callback) {
         leftSide: [],
         rightSide: []
     }
-    for (let card of leftCards) {
-        let src = card.childNodes[2].firstChild.firstChild.firstChild['src']
-        let template = tradeInfo['user2']['cards'].find(el => {
-            let season = el['cardTemplate']['properties'].season
-            return (season === "2020" ? el['cardTemplate']['images']['size201'] : el['cardTemplate']['images']['size201'].split('?')[0]) === src
-        })
-        res.leftSide.push({
-            item: card,
-            templateId: template['cardTemplate'].id,
-            price: 0
-        })
+    for (let item of leftCards) {
+        res.leftSide.push(findMatch(item, tradeInfo['user2']))
     }
-    for (let card of rightCards) {
-        let src = card.childNodes[2].firstChild.firstChild.firstChild['src']
-        let template = tradeInfo['user1']['cards'].find(el => {
-            let season = el['cardTemplate']['properties'].season
-            return (season === "2020" ? el['cardTemplate']['images']['size201'] : el['cardTemplate']['images']['size201'].split('?')[0]) === src
-        })
-        res.rightSide.push({
-            item: card,
-            templateId: template['cardTemplate'].id,
-            price: 0
-        })
+    for (let item of rightCards) {
+        res.rightSide.push(findMatch(item, tradeInfo['user1']))
     }
     callback(res)
 }
 
 /**
+ * Find templateId for a given DOM element.
+ * @param item, DOM element from trade page
+ * @param tradeInfo, trade data from the API
+ * @returns {{item: *, price: number, type: string, templateId: *}}, object containing item info
+ */
+function findMatch(item, tradeInfo) {
+    let src = item.childNodes[2].querySelector('img').src
+    let template;
+    if (src.match('card')) {
+        template = tradeInfo['cards'].find(el => {
+            //card image urls from 2020 are weird
+            let season = el['cardTemplate']['properties'].season
+            return (season === "2020" ? el['cardTemplate']['images']['size201'] : el['cardTemplate']['images']['size201'].split('?')[0]) === src
+        })
+        return {
+            type: 'card',
+            item: item,
+            templateId: template['cardTemplate'].id,
+            price: 0
+        }
+    } else {
+        template = tradeInfo['stickers'].find(el => src.match(el['stickerTemplate']['images'][1]))
+        return {
+            type: 'sticker',
+            item: item,
+            templateId: template['stickerTemplate'].id,
+            price: 0
+        }
+    }
+}
+
+/**
  * Gets the market value for each card, then injects it below
- * @param cards, cards shown on the site
+ * @param items, cards/stickers shown on the site
  * @param categoryId, streamers or csgo
  * @param jwt, user token from local storage
  * @param callback, return cards array with added prices
  */
-async function injectMarketValues(cards, categoryId, jwt, callback) {
-    for (let card of cards.leftSide.concat(cards.rightSide)) {
-        card.item.style.display = "block"
+async function injectMarketValues(items, categoryId, jwt, callback) {
+    for (let item of items.leftSide.concat(items.rightSide)) {
+        item.item.style.display = "block"
         let div = document.createElement("DIV")
         div.classList.add('cardPrice')
-        card.item.appendChild(div)
+        item.item.appendChild(div)
 
         let spinner = document.createElement("DIV")
         await fetch(chrome.runtime.getURL("spinner.html"))
@@ -123,7 +150,7 @@ async function injectMarketValues(cards, categoryId, jwt, callback) {
                 div.appendChild(spinner)
             })
 
-        let url = `https://api.epics.gg/api/v1/market/buy?categoryId=${categoryId}&page=1&sort=price&templateId=${card.templateId}&type=card`
+        let url = `https://api.epics.gg/api/v1/market/buy?categoryId=${categoryId}&page=1&sort=price&templateId=${item.templateId}&type=${item.type}`
         await fetch(url, {
             method: 'GET',
             headers: {
@@ -134,7 +161,7 @@ async function injectMarketValues(cards, categoryId, jwt, callback) {
             let price;
             if (data.data.count > 0) {
                 price = data.data['market'][0][0]['price']
-                card.price = price
+                item.price = price
             } else {
                 price = "-"
             }
@@ -153,7 +180,7 @@ async function injectMarketValues(cards, categoryId, jwt, callback) {
             div.appendChild(h2)
         })
     }
-    callback(cards)
+    callback(items)
 }
 
 function injectSums(leftSum, rightSum, leftHeader, rightHeader) {
