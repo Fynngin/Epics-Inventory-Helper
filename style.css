@@ -65,7 +65,7 @@ div.cardPrice {
     margin-top: 10px !important;
     margin-bottom: 10px !important;
     height: 16px;
-    display: flex;
+    display: flex !important;
     flex-direction: row;
     justify-content: center;
 }
@@ -80,4 +80,40 @@ h2.cardPrice {
     display: inline;
     height: 16px;
     width: auto;
+}
+
+.sub50 {
+    outline-color: #e33838;
+    outline-style: solid;
+}
+
+span.sub50 {
+    background-color: #e33838;
+    right: 0;
+    top: 0;
+    position: absolute;
+}
+
+.sub100 {
+    outline-color: #dece26;
+    outline-style: solid;
+}
+
+span.sub100 {
+    background-color: #dece26;
+    right: 0;
+    top: 0;
+    position: absolute;
+}
+
+.sub250 {
+    outline-color: #26de72;
+    outline-style: solid;
+}
+
+span.sub250 {
+    background-color: #26de72;
+    right: 0;
+    top: 0;
+    position: absolute;
 }

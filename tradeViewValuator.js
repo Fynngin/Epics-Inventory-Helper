@@ -115,6 +115,7 @@ function findMatch(item, tradeInfo) {
             type: 'card',
             item: item,
             templateId: template['cardTemplate'].id,
+            circulation: template['cardTemplate']['inCirculation'],
             price: 0
         }
     } else {
@@ -123,6 +124,7 @@ function findMatch(item, tradeInfo) {
             type: 'sticker',
             item: item,
             templateId: template['stickerTemplate'].id,
+            circulation: template['stickerTemplate']['inCirculation'],
             price: 0
         }
     }
@@ -164,6 +166,29 @@ async function injectMarketValues(items, categoryId, jwt, callback) {
                 item.price = price
             } else {
                 price = "-"
+            }
+
+            if (item.circulation <= 50) {
+                let circ = document.createElement('span')
+                circ.innerHTML = `Circ: ${item.circulation}`
+                circ.classList.add('sub50')
+                item.item.parentElement.style.position = "relative";
+                item.item.parentElement.appendChild(circ)
+                item.item.parentElement.classList.add('sub50')
+            } else if (item.circulation <= 100) {
+                let circ = document.createElement('span')
+                circ.innerHTML = `Circ: ${item.circulation}`
+                circ.classList.add('sub100')
+                item.item.parentElement.style.position = "relative";
+                item.item.parentElement.appendChild(circ)
+                item.item.parentElement.classList.add('sub100')
+            } else if (item.circulation <= 250) {
+                let circ = document.createElement('span')
+                circ.innerHTML = `Circ: ${item.circulation}`
+                circ.classList.add('sub250')
+                item.item.parentElement.style.position = "relative";
+                item.item.parentElement.appendChild(circ)
+                item.item.parentElement.classList.add('sub250')
             }
 
             div.removeChild(spinner)
