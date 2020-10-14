@@ -1,3 +1,5 @@
+let userId = JSON.parse(JSON.parse(window.localStorage.getItem("persist:root"))['auth'])['user']['id']
+
 chrome.runtime.onMessage.addListener(
     function(request) {
         if (request.message === "tradeView") {
@@ -83,15 +85,17 @@ function getTradeInfo(tradeId, categoryId, callback) {
  * @param callback, return array consisting of objects [{item: DOMelement, templateId: id}, ...]
  */
 function sortCards(leftCards, rightCards, tradeInfo, callback) {
+    let incoming = tradeInfo['offeredBy'] === userId
+
     let res = {
         leftSide: [],
         rightSide: []
     }
     for (let item of leftCards) {
-        res.leftSide.push(findMatch(item, tradeInfo['user2']))
+        res.leftSide.push(findMatch(item, incoming ? tradeInfo['user2'] : tradeInfo['user1']))
     }
     for (let item of rightCards) {
-        res.rightSide.push(findMatch(item, tradeInfo['user1']))
+        res.rightSide.push(findMatch(item, incoming ? tradeInfo['user1'] : tradeInfo['user2']))
     }
     callback(res)
 }
@@ -103,7 +107,7 @@ function sortCards(leftCards, rightCards, tradeInfo, callback) {
  * @returns {{item: *, price: number, type: string, templateId: *}}, object containing item info
  */
 function findMatch(item, tradeInfo) {
-    let src = item.childNodes[2].querySelector('img').src
+    let src = item.querySelector('img').src
     let template;
     if (src.match('card')) {
         template = tradeInfo['cards'].find(el => {
