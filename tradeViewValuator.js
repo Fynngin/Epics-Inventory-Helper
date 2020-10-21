@@ -111,9 +111,8 @@ function findMatch(item, tradeInfo) {
     let template;
     if (src.match('card')) {
         template = tradeInfo['cards'].find(el => {
-            //card image urls from 2020 are weird
-            let season = el['cardTemplate']['properties'].season
-            return (season === "2020" ? el['cardTemplate']['images']['size201'] : el['cardTemplate']['images']['size201'].split('?')[0]) === src
+            return (el['cardTemplate']['images']['size402'].split('?')[0] === src)
+                || (el['images']['size402'].split('?')[0] === src)
         })
         return {
             type: 'card',
