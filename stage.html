@@ -1,0 +1,49 @@
+<div class="outer-div">
+    <header class="header">
+        <div class="header_div">
+            <h2></h2>
+        </div>
+    </header>
+    <div class="inner_div">
+
+    </div>
+</div>
+
+<style>
+    .outer-div {
+        display: block;
+    }
+
+    .header {
+        display: block;
+    }
+
+    .header_div {
+        background: #1a0d21;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .inner_div {
+        background: linear-gradient(to bottom,rgba(39,19,47,0.5),rgba(39,19,47,0.15) 92.5%,transparent);
+        display: grid;
+        grid-template-columns: repeat(auto-fill,minmax(185px,1fr));
+        grid-gap: 5px;
+        padding: 10px !important;
+    }
+
+    li {
+        will-change: opacity;
+        display: flex;
+        align-items: center;
+        background: #1a0d21;
+        padding: 10px;
+        text-align: center;
+        overflow: hidden;
+        border-radius: 3px;
+        position: relative;
+        transition: all 150ms ease;
+    }
+</style>

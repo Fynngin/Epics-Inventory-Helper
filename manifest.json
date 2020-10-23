@@ -14,7 +14,7 @@
         {
             "matches": ["*://app.epics.gg/*"],
             "run_at": "document_end",
-            "js": ["marketPriceInjector.js", "tradeViewValuator.js"],
+            "js": ["marketPriceInjector.js", "tradeViewValuator.js", "rushWeb.js"],
             "css": ["style.css"]
         }
     ],
@@ -26,6 +26,6 @@
         "tabs"
     ],
     "web_accessible_resources": [
-        "images/coin.png", "spinner.html"
+        "images/coin.png", "spinner.html", "stage.html"
     ]
 }

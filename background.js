@@ -14,6 +14,9 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         let categoryId = changeInfo.url.match("(csgo|streamers)")[0] === 'csgo' ? 1 : 2
         let tradeId = changeInfo.url.match("[0-9]+")
         sendTradeViewMsg(tabId, tradeId, categoryId)
+    } else if (changeInfo.url && changeInfo.url.match("http(s)?://app.epics.gg/csgo/rush")) {
+        let categoryId = 1
+        sendRushMsg(tabId, categoryId)
     }
 });
 
@@ -41,6 +44,15 @@ function sendTradeViewMsg(tabId, tradeId, categoryId) {
         chrome.tabs.sendMessage(tabId, {
             message: 'tradeView',
             tradeId: tradeId,
+            categoryId: categoryId
+        })
+    });
+}
+
+function sendRushMsg(tabId, categoryId) {
+    chrome.tabs.query({active: true, currentWindow: true}, function(){
+        chrome.tabs.sendMessage(tabId, {
+            message: 'rush',
             categoryId: categoryId
         })
     });
