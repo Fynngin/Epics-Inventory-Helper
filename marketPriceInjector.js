@@ -1,4 +1,5 @@
 let jwt = JSON.parse(JSON.parse(window.localStorage.getItem("persist:root"))['auth'])['jwt']
+let userId = JSON.parse(JSON.parse(window.localStorage.getItem("persist:root"))['auth'])['user']['id']
 let coinSrc = chrome.runtime.getURL("images/coin.png")
 let collectionId;
 let categoryId;

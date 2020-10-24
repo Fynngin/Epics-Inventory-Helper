@@ -14,7 +14,7 @@
         {
             "matches": ["*://app.epics.gg/*"],
             "run_at": "document_end",
-            "js": ["marketPriceInjector.js", "tradeViewValuator.js", "stageOverview.js"],
+            "js": ["marketPriceInjector.js", "tradeViewValuator.js", "stageOverview.js", "rushMatch.js"],
             "css": ["style.css"]
         }
     ],

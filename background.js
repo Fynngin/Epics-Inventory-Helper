@@ -20,6 +20,12 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     }
 });
 
+chrome.runtime.onMessage.addListener(function(msg, sender) {
+    if (msg.message === 'rushTeamClick') {
+        chrome.tabs.sendMessage(sender.tab.id, msg)
+    }
+})
+
 function sendMsgWithCollId(tabId, collectionId, categoryId, season) {
     chrome.tabs.query({active: true, currentWindow: true}, function(){
         chrome.tabs.sendMessage(tabId, {

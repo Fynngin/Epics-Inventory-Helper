@@ -1,14 +1,18 @@
 let stages = []
 let teams = []
 let stagesCompleted = 0
+let aside = document.createElement('aside')
+let main
 
 chrome.runtime.onMessage.addListener(
     function(request) {
         if (request.message === "rush") {
             if (teams.length === 0) {
-                getTeams(addStages(function() {
-                    console.log(stages)
-                }))
+                getTeams(function() {
+                    addStages(function() {
+                        console.log(stages)
+                    })
+                })
             } else {
                 addStages(function() {
                     console.log(stages)
@@ -94,8 +98,8 @@ async function addStages(callback) {
 }
 
 async function addDomElements(callback) {
-    let main = document.querySelector('main')
-    let aside = document.createElement('aside')
+    if (!main)
+        main = document.querySelector('main')
     main.appendChild(aside)
 
     for (const stage of stages) {
@@ -173,5 +177,9 @@ function handleStageClick(evt) {
 }
 
 function handleTeamClick(team) {
-    console.log(team)
+    main.removeChild(aside)
+    chrome.runtime.sendMessage({
+        message: 'rushTeamClick',
+        team: team
+    })
 }
