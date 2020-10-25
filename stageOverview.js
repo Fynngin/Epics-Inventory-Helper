@@ -98,64 +98,75 @@ async function addStages(callback) {
 }
 
 async function addDomElements(callback) {
-    if (!main)
-        main = document.querySelector('main')
-    main.appendChild(aside)
+    main = document.querySelector('main')
+    main.style.display = "flex"
+    main.style.flexDirection = "row"
+    aside.style.order = "2"
+    aside.style.flexGrow = "5"
+    main.firstChild.style.order = "1"
+    main.firstChild.style.width = "25%"
+    main.firstChild.style.flexGrow = "1"
+    main.lastChild.style.flexGrow = "1"
+    main.lastChild.style.order = "3"
+    main.insertBefore(aside, main.lastChild)
 
-    for (const stage of stages) {
-        stage.isShowing = false
-        let section = document.createElement('section')
-        section.style.paddingLeft = "10px"
-        section.style.paddingRight = "10px"
-        section.style.paddingTop = "0"
-        section.style.paddingBottom = "0"
-        section.style.height = "auto"
+    //check if stages are already loaded
+    if (!aside.querySelector('section')) {
+        for (const stage of stages) {
+            stage.isShowing = false
+            let section = document.createElement('section')
+            section.style.paddingLeft = "10px"
+            section.style.paddingRight = "10px"
+            section.style.paddingTop = "0"
+            section.style.paddingBottom = "0"
+            section.style.height = "auto"
 
-        await fetch(chrome.runtime.getURL("stage.html"))
-            .then(res => res.text())
-            .then(async data => {
-                section.innerHTML = data
-                let badge = section.querySelector('header img')
-                badge.src = stage.badge
-                let header = section.querySelector('header h2')
-                header.innerHTML = stage['name']
-                if (stage.order <= (stagesCompleted + 1)) {
-                    header.parentElement.parentElement.addEventListener('click', handleStageClick)
-                }
-                let innerDiv = section.querySelector('.inner_div')
-                for (const team of stage.teams) {
-                    let li = document.createElement('li')
-                    li.style.cursor = "pointer"
-                    li.addEventListener('click', function() {
-                        handleTeamClick(team)
-                    })
-                    let flex = document.createElement('div')
-                    flex.style.width = "100%"
-                    flex.style.display = "flex"
-                    flex.style.justifyContent = "space-between"
-                    let div_right = document.createElement('div')
-                    div_right.style.alignSelf = "center"
-                    div_right.style.marginLeft = "auto"
-                    let progress = document.createElement('h5')
-                    progress.innerHTML = `${team.progress} / ${stage.winsNeeded}`
-                    progress.style.color = team.progress >= stage.winsNeeded ? "#0baaaa" : "#aa0b53"
-                    div_right.appendChild(progress)
-                    let div_left = document.createElement('div')
-                    let p = document.createElement('p')
-                    let img = document.createElement('img')
-                    img.src = team.logo
-                    img.style.height = "30px"
-                    p.innerHTML = team.name
-                    div_left.appendChild(img)
-                    div_left.appendChild(p)
-                    flex.appendChild(div_left)
-                    flex.appendChild(div_right)
-                    li.appendChild(flex)
-                    team.container = innerDiv
-                    team.item = li
-                }
-            })
-        aside.appendChild(section)
+            await fetch(chrome.runtime.getURL("stage.html"))
+                .then(res => res.text())
+                .then(async data => {
+                    section.innerHTML = data
+                    let badge = section.querySelector('header img')
+                    badge.src = stage.badge
+                    let header = section.querySelector('header h2')
+                    header.innerHTML = stage['name']
+                    if (stage.order <= (stagesCompleted + 1)) {
+                        header.parentElement.parentElement.addEventListener('click', handleStageClick)
+                    }
+                    let innerDiv = section.querySelector('.inner_div')
+                    for (const team of stage.teams) {
+                        let li = document.createElement('li')
+                        li.style.cursor = "pointer"
+                        li.addEventListener('click', function () {
+                            handleTeamClick(team)
+                        })
+                        let flex = document.createElement('div')
+                        flex.style.width = "100%"
+                        flex.style.display = "flex"
+                        flex.style.justifyContent = "space-between"
+                        let div_right = document.createElement('div')
+                        div_right.style.alignSelf = "center"
+                        div_right.style.marginLeft = "auto"
+                        let progress = document.createElement('h5')
+                        progress.innerHTML = `${team.progress} / ${stage.winsNeeded}`
+                        progress.style.color = team.progress >= stage.winsNeeded ? "#0baaaa" : "#aa0b53"
+                        div_right.appendChild(progress)
+                        let div_left = document.createElement('div')
+                        let p = document.createElement('p')
+                        let img = document.createElement('img')
+                        img.src = team.logo
+                        img.style.height = "30px"
+                        p.innerHTML = team.name
+                        div_left.appendChild(img)
+                        div_left.appendChild(p)
+                        flex.appendChild(div_left)
+                        flex.appendChild(div_right)
+                        li.appendChild(flex)
+                        team.container = innerDiv
+                        team.item = li
+                    }
+                })
+            aside.appendChild(section)
+        }
     }
     callback()
 }

@@ -1,4 +1,4 @@
-let userId = JSON.parse(JSON.parse(window.localStorage.getItem("persist:root"))['auth'])['user']['id']
+// let userId = JSON.parse(JSON.parse(window.localStorage.getItem("persist:root"))['auth'])['user']['id']
 
 chrome.runtime.onMessage.addListener(
     function(request) {
