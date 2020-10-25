@@ -1,0 +1,42 @@
+<div class="teamContainer">
+    <header>
+        <h2></h2>
+        <div style="display: flex; align-items: center;justify-content: center; margin-left: 10px">
+            <strong class="teamName"></strong>
+            <span class="teamRating"></span>
+        </div>
+    </header>
+    <div class="teamImages">
+
+    </div>
+</div>
+
+<style>
+    .enemyTeamHeader {
+        background-color: #0baaaa;
+        padding-left: 10px;
+        padding-bottom: 5px
+    }
+
+    .teamName {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        flex-grow: 10;
+    }
+
+    .teamContainer {
+        border: 4px solid #0baaaa;
+        border-radius: 10px;
+    }
+
+    .teamRating {
+        float: right;
+        flex-grow: 1;
+    }
+
+    .teamImages {
+        display: flex;
+        justify-content: space-around;
+        grid-template-columns: 20% 20% 20% 20% 20%;
+    }
+</style>

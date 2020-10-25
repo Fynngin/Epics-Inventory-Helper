@@ -38,16 +38,39 @@ function getUserRosters(callback) {
     })
 }
 
-function displayTeams() {
+async function displayTeams() {
+    console.log(matchRoster)
+    let container = document.createElement('div')
+    container.style.order = "2"
+    main.insertBefore(container, main.lastChild)
+    await displayRoster(matchRoster, container)
+    let h2 = container.querySelector('h2')
+    h2.innerHTML = "Enemy Roster"
+    h2.classList.add('enemyTeamHeader')
+    container.querySelector('.teamContainer').style.marginBottom = "10px"
+    for (const roster of userRosters) {
+        displayRoster(roster, container)
+    }
+}
+
+async function displayRoster(roster, container) {
     let div = document.createElement('div')
-    div.style.display = "flex"
-    div.style.justifyContent = "space-around"
-    main.style.gridTemplateColumns = "20% 20% 20% 20% 20%"
-    for (const card of matchRoster['cards']) {
+    div.style.order = "2"
+    div.style.marginLeft = "10px"
+    div.style.marginRight = "10px"
+    await fetch(chrome.runtime.getURL("roster.html"))
+        .then(res => res.text())
+        .then(data => {
+            div.innerHTML = data
+        })
+
+    for (const card of roster['cards']) {
         let img = document.createElement('img')
         img.src = card['card'].images['size402']
-        img.style.height = "200px"
-        div.appendChild(img)
+        img.style.maxHeight = "200px"
+        div.querySelector('.teamImages').appendChild(img)
     }
-    main.appendChild(div)
+    div.querySelector('.teamName').innerHTML = roster.name
+    div.querySelector('.teamRating').innerHTML = `${roster.rating} OVR`
+    container.appendChild(div)
 }

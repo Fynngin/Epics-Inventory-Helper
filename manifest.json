@@ -26,6 +26,6 @@
         "tabs"
     ],
     "web_accessible_resources": [
-        "images/coin.png", "spinner.html", "stage.html"
+        "images/coin.png", "spinner.html", "stage.html", "roster.html"
     ]
 }
