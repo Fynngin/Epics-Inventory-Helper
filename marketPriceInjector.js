@@ -51,8 +51,12 @@ chrome.runtime.onMessage.addListener(
                         for (let i = 0; i < mutation.addedNodes.length; i++) {
                             let node = mutation.addedNodes[i]
                             if (node.querySelector('li img[src^="https://cdn.epics.gg/collection"]')) {
-                                observer.disconnect()
-                                node.childNodes[1].click()
+                                let collectionHeader = node.childNodes[1];
+								let opacity = getComputedStyle(collectionHeader).opacity;
+								if (opacity === "1") {
+									observer.disconnect();
+									collectionHeader.click();
+								}
                             }
                         }
                     })
