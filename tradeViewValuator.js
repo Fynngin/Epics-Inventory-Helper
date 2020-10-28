@@ -8,7 +8,7 @@ chrome.runtime.onMessage.addListener(
                 let rightSide = document.querySelector('nav').nextSibling.firstChild.lastChild.childNodes[1]
                 let leftCards = getDomElements(leftSide)
                 let rightCards = getDomElements(rightSide)
-
+                
                 let leftHeader = leftSide.parentElement.previousSibling.childNodes[0].querySelector('p')
                 let rightHeader = leftSide.parentElement.previousSibling.childNodes[1].querySelector('p')
                 let spinnerLeft = document.createElement("DIV")
@@ -52,9 +52,10 @@ function getDomElements(container) {
     return Array.from(container.querySelectorAll('img')).map(el => {
         if (el.src.match('card'))
             return el.parentElement.parentElement.parentElement.parentElement
-        else
+        else if (el.src.match('sticker')) {
             return el.parentElement.parentElement
-    })
+        }
+    }).filter(el => el !== undefined)
 }
 
 /**
@@ -143,9 +144,9 @@ function findMatch(item, tradeInfo) {
 async function injectMarketValues(items, categoryId, jwt, callback) {
     for (let item of items.leftSide.concat(items.rightSide)) {
         item.item.style.display = "block"
-        let div = document.createElement("DIV")
+        let div = document.createElement("span")
         div.classList.add('cardPrice')
-        item.item.appendChild(div)
+        item.item.querySelector('span').appendChild(div)
 
         let spinner = document.createElement("DIV")
         await fetch(chrome.runtime.getURL("spinner.html"))

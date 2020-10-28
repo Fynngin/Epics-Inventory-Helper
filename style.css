@@ -61,9 +61,10 @@ span.marketPriceBtn::before {
     transition: 200ms ease-in-out;
 }
 
-div.cardPrice {
-    margin-top: 10px !important;
-    margin-bottom: 10px !important;
+span.cardPrice {
+    /* margin-top: 10px !important;
+    margin-bottom: 10px !important; */
+    float: right;
     height: 16px;
     display: flex !important;
     flex-direction: row;
