@@ -91,7 +91,7 @@ h2.cardPrice {
 span.sub50 {
     background-color: #e33838;
     right: 0;
-    top: 0;
+    bottom:  0;
     position: absolute;
 }
 
@@ -103,7 +103,7 @@ span.sub50 {
 span.sub100 {
     background-color: #dece26;
     right: 0;
-    top: 0;
+    bottom: 0;
     position: absolute;
 }
 
@@ -115,6 +115,6 @@ span.sub100 {
 span.sub250 {
     background-color: #26de72;
     right: 0;
-    top: 0;
+    bottom: 0;
     position: absolute;
 }
