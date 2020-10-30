@@ -1,3 +1,5 @@
+let briefHistoryCollections = ['3502', '3900', '4225', '4423', '4490', '5413']
+
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     if (changeInfo.url && changeInfo.url.match("http(s)?://app.epics.gg/(csgo|streamers)/trading/select/[0-9]+/(in|out)")) {
         let categoryId = changeInfo.url.match("(csgo|streamers)")[0] === 'csgo' ? 1 : 2
@@ -14,6 +16,12 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         let categoryId = changeInfo.url.match("(csgo|streamers)")[0] === 'csgo' ? 1 : 2
         let tradeId = changeInfo.url.match("[0-9]+")
         sendTradeViewMsg(tabId, tradeId, categoryId)
+    } else if (changeInfo.url && changeInfo.url.match("http(s)?://app.epics.gg/(csgo|streamers)/library") && !changeInfo.url.match("template")) {
+        let categoryId = changeInfo.url.match("(csgo|streamers)")[0] === 'csgo' ? 1 : 2
+        let collectionId = changeInfo.url.match("collection=[0-9]+")[0].match('[0-9]+')
+        collectionId ? collectionId = collectionId[0] : collectionId = null
+        if (briefHistoryCollections.includes(collectionId))
+            sendBriefHistoryMsg(tabId, collectionId, categoryId)
     }
 });
 
@@ -41,6 +49,16 @@ function sendTradeViewMsg(tabId, tradeId, categoryId) {
         chrome.tabs.sendMessage(tabId, {
             message: 'tradeView',
             tradeId: tradeId,
+            categoryId: categoryId
+        })
+    });
+}
+
+function sendBriefHistoryMsg(tabId, collectionId, categoryId) {
+    chrome.tabs.query({active: true, currentWindow: true}, function(){
+        chrome.tabs.sendMessage(tabId, {
+            message: 'briefHistory',
+            collectionId: collectionId,
             categoryId: categoryId
         })
     });
