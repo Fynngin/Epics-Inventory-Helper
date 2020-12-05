@@ -1,16 +1,16 @@
 chrome.runtime.onMessage.addListener(function(request) {
     if (request.message === "briefHistory") {
         window.setTimeout(function() {
-            getCardTemplates(request.categoryId, request.collectionId, function(res) {
-                findDomElements(res, function(res) {
-                    sortDoms(res)
+            getHistoryCardTemplates(request.categoryId, request.collectionId, function(res) {
+                findDomElements(res, function(result) {
+                    sortDoms(result)
                 })
             })
         }, 3000)
     }
 });
 
-function getCardTemplates(categoryId, collectionId, callback) {
+function getHistoryCardTemplates(categoryId, collectionId, callback) {
     let url = `https://api.epics.gg/api/v1/collections/${collectionId}/card-templates?categoryId=${categoryId}`
     fetch(url, {
         method: 'GET',

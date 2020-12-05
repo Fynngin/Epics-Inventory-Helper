@@ -87,8 +87,8 @@ function getCardTemplates(evt, categoryId, collectionId) {
 
     if (el.checked !== null) {   //ignore weird double click for now
         if (el.checked) {
-            let cards = Array.from(document.querySelectorAll('li img[src^="https://cdn.epics.gg/card"]'))
-            let stickers = Array.from(document.querySelectorAll('li img[src^="https://cdn.epics.gg/sticker"]'))
+            let cards = Array.from(document.querySelectorAll('li img[src*="epics.gg/card"]'))
+            let stickers = Array.from(document.querySelectorAll('li img[src*="epics.gg/sticker"]'))
             let listItems = cards.concat(stickers).map(it => it.closest('li'))
             sortItems(listItems, categoryId, collectionId)
         } else {

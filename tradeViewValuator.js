@@ -108,12 +108,12 @@ function sortCards(leftCards, rightCards, tradeInfo, callback) {
  * @returns {{item: *, price: number, type: string, templateId: *}}, object containing item info
  */
 function findMatch(item, tradeInfo) {
-    let src = item.querySelector('img').src
+    let src = item.querySelector('img').src.split('.epics.gg')[1]
     let template;
     if (src.match('card')) {
         template = tradeInfo['cards'].find(el => {
-            return (el['cardTemplate']['images']['size402'].split('?')[0] === src)
-                || (el['images']['size402'].split('?')[0] === src)
+            return (el['cardTemplate']['images']['size402'].split('?')[0].split('.epics.gg')[1] === src)
+                || (el['images']['size402'].split('?')[0].split('.epics.gg')[1] === src)
         })
         return {
             type: 'card',

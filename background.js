@@ -20,6 +20,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         let categoryId = changeInfo.url.match("(csgo|streamers)")[0] === 'csgo' ? 1 : 2
         let collectionId = changeInfo.url.match("collection=[0-9]+")[0].match('[0-9]+')
         collectionId ? collectionId = collectionId[0] : collectionId = null
+        console.log(collectionId)
         if (briefHistoryCollections.includes(collectionId))
             sendBriefHistoryMsg(tabId, collectionId, categoryId)
     }
