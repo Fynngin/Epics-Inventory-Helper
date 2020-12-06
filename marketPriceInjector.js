@@ -134,7 +134,7 @@ async function sortItems(listItems, categoryId, collectionId) {
 
     let res = []
     for (let item of listItems) {
-        let src = item.querySelector('img').src
+        let src = item.querySelector('img').src.split('.epics.gg')[1]
         if (src.match('sticker')) {
             let template = stickerTemplates.find(elem => src.match(elem.images[0]))
             let templateId = template.id
@@ -154,7 +154,9 @@ async function sortItems(listItems, categoryId, collectionId) {
         } else {
             let template = cardTemplates.find(elem => {
                 //remove timestamp from file when prior to season 2020
-                return season === "2020" ? elem.images['size402'] === src : elem.images['size402'].split('?')[0] === src
+                return season === "2020"
+                    ? elem.images['size402'].split('.epics.gg')[1] === src
+                    : elem.images['size402'].split('?')[0].split('.epics.gg')[1] === src
             })
             let templateId = template.id
             res.push({

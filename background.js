@@ -1,5 +1,7 @@
 let briefHistoryCollections = ['3502', '3900', '4225', '4423', '4490', '5413']
 
+chrome.browserAction.setTitle({title: `Epics Inventory Helper v${chrome.runtime.getManifest().version}`})
+
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     if (changeInfo.url && changeInfo.url.match("http(s)?://app.epics.gg/(csgo|streamers)/trading/select/[0-9]+/(in|out)")) {
         let categoryId = changeInfo.url.match("(csgo|streamers)")[0] === 'csgo' ? 1 : 2
