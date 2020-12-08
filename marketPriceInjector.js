@@ -136,7 +136,7 @@ async function sortItems(listItems, categoryId, collectionId) {
     for (let item of listItems) {
         let src = item.querySelector('img').src.split('.epics.gg')[1]
         if (src.match('sticker')) {
-            let template = stickerTemplates.find(elem => src.match(elem.images[0]))
+            let template = stickerTemplates.find(elem => src.match(elem.images[0].url))
             let templateId = template.id
             res.push({
                 type: 'sticker',
