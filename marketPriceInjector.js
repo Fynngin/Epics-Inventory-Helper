@@ -153,10 +153,12 @@ async function sortItems(listItems, categoryId, collectionId) {
             })
         } else {
             let template = cardTemplates.find(elem => {
+                console.log(src)
+                console.log(elem.images['size402'])
                 //remove timestamp from file when prior to season 2020
                 return season === "2020"
                     ? elem.images['size402'].split('.epics.gg')[1] === src
-                    : elem.images['size402'].split('?')[0].split('.epics.gg')[1] === src
+                    : elem.images['size402'].split('?')[0].split('.epics.gg')[1] === src.split('?')[0]
             })
             let templateId = template.id
             res.push({
