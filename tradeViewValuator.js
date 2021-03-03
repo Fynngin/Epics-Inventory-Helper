@@ -4,8 +4,8 @@ chrome.runtime.onMessage.addListener(
     function(request) {
         if (request.message === "tradeView") {
             window.setTimeout(async function() {
-                let leftSide = document.querySelector('nav').nextSibling.firstChild.lastChild.firstChild
-                let rightSide = document.querySelector('nav').nextSibling.firstChild.lastChild.childNodes[1]
+                let leftSide = document.querySelector('nav').parentElement.parentElement.childNodes[2].firstChild.firstChild.lastChild.firstChild
+                let rightSide = document.querySelector('nav').parentElement.parentElement.childNodes[2].firstChild.firstChild.lastChild.childNodes[1]
                 let leftCards = getDomElements(leftSide)
                 let rightCards = getDomElements(rightSide)
                 
