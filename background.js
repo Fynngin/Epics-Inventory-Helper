@@ -22,9 +22,11 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         let categoryId = changeInfo.url.match("(csgo|streamers)")[0] === 'csgo' ? 1 : 2
         let collectionId = changeInfo.url.match("collection=[0-9]+")[0].match('[0-9]+')
         collectionId ? collectionId = collectionId[0] : collectionId = null
-        console.log(collectionId)
         if (briefHistoryCollections.includes(collectionId))
             sendBriefHistoryMsg(tabId, collectionId, categoryId)
+    } else if (changeInfo.url && changeInfo.url.match("http(s)?://app.epics.gg/(csgo|streamers)/spinner")) {
+        let categoryId = changeInfo.url.match("(csgo|streamers)")[0] === 'csgo' ? 1 : 2
+        sendSpinnerOddsMsg(tabId, categoryId)
     }
 });
 
@@ -62,6 +64,15 @@ function sendBriefHistoryMsg(tabId, collectionId, categoryId) {
         chrome.tabs.sendMessage(tabId, {
             message: 'briefHistory',
             collectionId: collectionId,
+            categoryId: categoryId
+        })
+    });
+}
+
+function sendSpinnerOddsMsg(tabId, categoryId) {
+    chrome.tabs.query({active: true, currentWindow: true}, function(){
+        chrome.tabs.sendMessage(tabId, {
+            message: 'spinnerOdds',
             categoryId: categoryId
         })
     });

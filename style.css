@@ -118,3 +118,10 @@ span.sub250 {
     bottom: 0;
     position: absolute;
 }
+
+.spinnerOdds {
+    font-family: russo one,proxima-nova,sans-serif;
+    font-weight: 400;
+    margin-left: auto;
+    margin-top: 10px;
+}
