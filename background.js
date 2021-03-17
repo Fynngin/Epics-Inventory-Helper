@@ -1,4 +1,5 @@
 let briefHistoryCollections = ['3502', '3900', '4225', '4423', '4490', '5413']
+let currUrl = "";
 
 chrome.browserAction.setTitle({title: `Epics Inventory Helper v${chrome.runtime.getManifest().version}`})
 
@@ -14,17 +15,22 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         } else {
             sendClickMsg(tabId)
         }
+    }else if (changeInfo.url.split('?')[0] === currUrl) {
+        return;
     } else if (changeInfo.url && changeInfo.url.match("http(s)?://app.epics.gg/(csgo|streamers)/trading/view/[0-9]+")) {
+        currUrl = changeInfo.url.split('?')[0];
         let categoryId = changeInfo.url.match("(csgo|streamers)")[0] === 'csgo' ? 1 : 2
         let tradeId = changeInfo.url.match("[0-9]+")
         sendTradeViewMsg(tabId, tradeId, categoryId)
     } else if (changeInfo.url && changeInfo.url.match("http(s)?://app.epics.gg/(csgo|streamers)/library") && !changeInfo.url.match("template")) {
+        currUrl = changeInfo.url.split('?')[0];
         let categoryId = changeInfo.url.match("(csgo|streamers)")[0] === 'csgo' ? 1 : 2
         let collectionId = changeInfo.url.match("collection=[0-9]+")[0].match('[0-9]+')
         collectionId ? collectionId = collectionId[0] : collectionId = null
         if (briefHistoryCollections.includes(collectionId))
             sendBriefHistoryMsg(tabId, collectionId, categoryId)
     } else if (changeInfo.url && changeInfo.url.match("http(s)?://app.epics.gg/(csgo|streamers)/spinner")) {
+        currUrl = changeInfo.url.split('?')[0];
         let categoryId = changeInfo.url.match("(csgo|streamers)")[0] === 'csgo' ? 1 : 2
         sendSpinnerOddsMsg(tabId, categoryId)
     }
