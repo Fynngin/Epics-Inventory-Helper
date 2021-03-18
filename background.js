@@ -33,6 +33,8 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         currUrl = changeInfo.url.split('?')[0];
         let categoryId = changeInfo.url.match("(csgo|streamers)")[0] === 'csgo' ? 1 : 2
         sendSpinnerOddsMsg(tabId, categoryId)
+    } else {
+        currUrl = changeInfo.url.split('?')[0];
     }
 });
 
