@@ -6,12 +6,14 @@ chrome.runtime.onMessage.addListener(function (request) {
 	if (request.message === "tradeView") {
 		console.log("trade extension");
 		window.setTimeout(async function () {
-			let leftSide = document.querySelector("._1rlOKIp");
-			// document.querySelector("nav").parentElement.parentElement.childNodes[2].firstChild
-			// 	.firstChild.lastChild.firstChild;
-			let rightSide = document.querySelector("._1S9JmvQ");
-			// document.querySelector("nav").parentElement.parentElement.childNodes[2].firstChild
-			// 	.firstChild.lastChild.childNodes[1];
+			let leftSide =
+				document.querySelector("nav").parentElement.nextSibling.lastChild.firstChild
+					.firstChild.lastChild.firstChild;
+			// document.querySelector("._1rlOKIp");
+			let rightSide =
+				document.querySelector("nav").parentElement.nextSibling.lastChild.firstChild
+					.firstChild.lastChild.childNodes[1];
+			// document.querySelector("._1S9JmvQ");
 			let leftCards = getDomElements(leftSide);
 			let rightCards = getDomElements(rightSide);
 			let leftHeader =
